@@ -1,13 +1,18 @@
 # Author: Scott Li
-# Date: 11/10/20
-# Description: Assignment Project Portfolio. Creates recursive functions for add, remove, contains, insert and reverse.
-#                            Create get_head function.
+# Date: 11/24/20
+# Description: Assignment Project Portfolio.
+#               Creates Focus board game for two players with one set with Red color and
+#               the other Green color. On a player's turn, the player can make moves based on the pieces they have on
+#               on the grid they want to move. Players can move only one unit horizontally or vertically. Players
+#               can have up to 5 pieces in a single grid. If more than 5 pieces, first item gets dequeued, goes to
+#               player reserve if player's color or go to player captured if opponents color.
+#               Whoever captures all opponents pieces wins the game.
 
 class FocusGame:
     """Creates a Focus Game object."""
 
     def __init__(self, player1, player2):
-        """"""
+        """Initiate variables that help track the game."""
         # initialize attributes
         self._turn = 0
         self._odd_turn_player = None
@@ -22,11 +27,18 @@ class FocusGame:
         self._board = Board()
         self._gameboard = self._board.get_board()
 
-    def move_piece(self, player, origin, destination, pieces):
-        """"""
+    def move_piece(self, name, origin, destination, pieces):
+        """ Moves pieces from origin to destination on game board.
+
+            :Keyword arguments:
+            name -- player name
+            origin -- original coordinates
+            destination -- destination coordinates
+            pieces -- number of pieces to move
+        """
         self._turn += 1
         # check if there is any illegal commands
-        legality = self._check_legal(player, origin, destination, pieces)
+        legality = self._check_legal(name, origin, destination, pieces)
         piece_list = []
 
         if legality is True:
@@ -42,11 +54,11 @@ class FocusGame:
                     # remove first item in list
                     item = self._gameboard[destination].pop(0)
                     # move to player reserve or capturedd
-                    self._take_piece(player, item)
+                    self._take_piece(name, item)
 
             # check win
-            if self._check_win(player) is True:
-                return f'{player} Wins!'
+            if self._check_win(name) is True:
+                return f'{name} Wins!'
 
             return 'successfully moved'
         else:
@@ -65,6 +77,7 @@ class FocusGame:
         return len(self._get_player_by_name(name).get_captured())
 
     def reserved_move(self, name, position):
+        """Move reserve piece to board."""
         if self.show_reserve(name) == 0:
             return 'no pieces in reserve'
         item = self._get_player_by_name(name).pop_reserve()
@@ -122,7 +135,13 @@ class FocusGame:
         return True
 
     def _move_to_list(self, origin_list, destination_list, max_range):
-        """Move item from one list to another."""
+        """ Move item from one list to another.
+
+            :Keyword arguments:
+            origin_list -- list to move from
+            destination_list -- list to move to
+            max_range -- number of times to move items
+        """
         for i in range(0, max_range):
             # pop last item in list
             item = origin_list.pop()
