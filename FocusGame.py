@@ -114,13 +114,25 @@ class FocusGame:
             return True
         return False
 
-    def _check_pieces(self, origin, pieces):
+    def _check_pieces(self, name, origin, pieces):
         """Check if pieces are legal"""
-        # get list size from coordinate
-        stacksize = len(self._gameboard[origin])
-        if 1 <= pieces <= stacksize:
-            return True
-        return False
+        # check if moved pieces smaller than 1 or larger than total piece on origin
+        stack = self._gameboard[origin]
+        if 1 > pieces or pieces > len(stack):
+            return False
+
+        colour = self._get_player_by_name(name).get_color()
+        count = 0
+        # check if enough player piece in origin stack
+        for i in range(0, len(stack)):
+            # if last item in list is player color
+            if stack[-1 - i] == colour:
+                count += 1
+                # if enough pieces to move in list
+                if pieces == count:
+                    return True
+            else:
+                return False
 
     def _check_legal(self, name, origin, destination, pieces):
         """Check legality of different conditions."""
@@ -130,7 +142,7 @@ class FocusGame:
             return 'not your turn'
         if not self._check_move(origin, destination):
             return 'invalid location'
-        if not self._check_pieces(origin, pieces):
+        if not self._check_pieces(name, origin, pieces):
             return 'invalid number of pieces'
         return True
 
@@ -225,8 +237,7 @@ class Board:
         """Initialize board and board pieces."""
         self._board = {
             (0, 0): ['R'], (0, 1): ['R'], (0, 2): ['G'], (0, 3): ['G'], (0, 4): ['R'], (0, 5): ['R'],
-            (1, 0): ['G'], (1, 1): ['G'], (1, 2): ['R'], (1, 3): ['R'], (1, 4): ['G'],
-            (1, 5): ['G'],
+            (1, 0): ['G'], (1, 1): ['G'], (1, 2): ['R'], (1, 3): ['R'], (1, 4): ['G'], (1, 5): ['G'],
             (2, 0): ['R'], (2, 1): ['R'], (2, 2): ['G'], (2, 3): ['G'], (2, 4): ['R'], (2, 5): ['R'],
             (3, 0): ['G'], (3, 1): ['G'], (3, 2): ['R'], (3, 3): ['R'], (3, 4): ['G'], (3, 5): ['G'],
             (4, 0): ['R'], (4, 1): ['R'], (4, 2): ['G'], (4, 3): ['G'], (4, 4): ['R'], (4, 5): ['R'],
@@ -240,11 +251,27 @@ class Board:
 
 def main():
     game = FocusGame(('PlayerA', 'R'), ('PlayerB', 'G'))
-    print(game.move_piece('PlayerA', (0, 0), (0,1), 1))  # Returns message "successfully moved"
-    print(game.show_pieces((0, 1)))  # Returns ['R','R']
-    print(game.show_captured('PlayerA'))  # Returns 0
-    print(game.reserved_move('PlayerA', (0, 0)))  # Returns message "No pieces in reserve"
-    print(game.show_reserve('PlayerA'))  # Returns 0
+    while True:
+        mode = input('What would you like to do? (Move Piece/Show Piece/Show Reserve/Show Captured): ')
+        name = input('Please enter player name (PlayerA/PlayerB): ')
+        if mode == 'Move Piece':
+            origin = int(input('Please enter origin coordinates you are moving from (x,y): '))
+            destination = int(input('Please enter destination coordinates you are moving from (x,y): '))
+            pieces = input('Please enter the number of pieces you would like to move: ')
+            game.move_piece(name, origin, destination, pieces)
+
+            prompt = input('Would you like to continue? (Y/N): ')
+        else:
+            print('Thanks for playing! Have a good day!')
+            return
+
+
+
+    # print(game.move_piece('PlayerA', (0, 0), (0,1), 1))  # Returns message "successfully moved"
+    # print(game.show_pieces((0, 1)))  # Returns ['R','R']
+    # print(game.show_captured('PlayerA'))  # Returns 0
+    # print(game.reserved_move('PlayerA', (0, 0)))  # Returns message "No pieces in reserve"
+    # print(game.show_reserve('PlayerA'))  # Returns 0
 
 
 if __name__ == '__main__':
