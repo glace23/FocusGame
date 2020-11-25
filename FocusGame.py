@@ -321,6 +321,17 @@ def main():
     # initialize focus game
     name_1 = input('What is your name? (Red): ')
     name_2 = input('What is your name? (Green): ')
+    if name_1 == '' or name_1.isspace() is True:
+        name_1 = 'A'
+        print('Oops! Invalid name 1, going default!')
+    if name_2 == '' or name_2.isspace() is True:
+        name_2 = 'B'
+        print('Oops! Invalid name 2, going default!')
+    if name_1 == name_2:
+        name_1 = 'A'
+        name_2 = 'B'
+        print('Oops! same name, going default!')
+
     player_1 = f"Player{name_1.upper()}"
     player_2 = f"Player{name_2.upper()}"
     print(f'Hi {player_1} and {player_2}!')
@@ -336,39 +347,49 @@ def main():
 
         # move piece
         if mode.lower() == 'move piece':
-            name = input(f'Please enter player name ({name_1}/{name_2}): ')
-            playername = 'Player' + name.upper()
+            try:
+                name = input(f'Please enter player name ({name_1}/{name_2}): ')
+                playername = 'Player' + name.upper()
 
-            print('Please enter origin coordinates you are moving from (x, y).')
-            origin_x = int(input('x-coordinate: '))
-            origin_y = int(input('y-coordinate: '))
-            origin = (origin_x, origin_y)
-            print(f'Origin: {origin}:{game.show_pieces(origin)}')
+                print('Please enter origin coordinates you are moving from (x, y).')
+                origin_x = int(input('x-coordinate: '))
+                origin_y = int(input('y-coordinate: '))
+                origin = (origin_x, origin_y)
+                print(f'Origin: {origin}:{game.show_pieces(origin)}')
 
-            print('Please enter destination coordinates you are moving to (x,y): ')
-            destination_x = int(input('x-coordinate: '))
-            destination_y = int(input('y-coordinate: '))
-            destination = (destination_x, destination_y)
-            print(f'Destination: {destination}:{game.show_pieces(destination)}')
-            pieces = int(input('Please enter the number of pieces you would like to move: '))
+                print('Please enter destination coordinates you are moving to (x,y): ')
+                destination_x = int(input('x-coordinate: '))
+                destination_y = int(input('y-coordinate: '))
+                destination = (destination_x, destination_y)
+                print(f'Destination: {destination}:{game.show_pieces(destination)}')
+                pieces = int(input('Please enter the number of pieces you would like to move: '))
 
-            result = game.move_piece(playername, origin, destination, pieces)
-            print(result)
-            print(f'Results: {destination}:{game.show_pieces(destination)}')
+                result = game.move_piece(playername, origin, destination, pieces)
+                print(result)
+                print(f'Results: {destination}:{game.show_pieces(destination)}')
 
-            if prompt() == 'n':
-                return
+            except ValueError:
+                print('Oops! Incorrect coordinates!')
+
+            finally:
+                if prompt() == 'n':
+                    return
 
         # show piece
         elif mode.lower() == 'show pieces':
-            print('Please enter coordinates you want to check (x, y).')
-            x = int(input('x-coordinate: '))
-            y = int(input('y-coordinate: '))
-            coor = (x, y)
-            print(f'{coor}:{game.show_pieces(coor)}')
+            try:
+                print('Please enter coordinates you want to check (x, y).')
+                x = int(input('x-coordinate: '))
+                y = int(input('y-coordinate: '))
+                coor = (x, y)
+                print(f'{coor}:{game.show_pieces(coor)}')
 
-            if prompt() == 'n':
-                return
+            except ValueError:
+                print('Oops! Incorrect coordinates!')
+
+            finally:
+                if prompt() == 'n':
+                    return
 
         # show reserve
         elif mode.lower() == 'show reserve':
@@ -389,21 +410,26 @@ def main():
                 return
 
         elif mode.lower() == 'reserved move':
-            name = input(f"Please enter player name ({name_1}/{name_2})'s reserve to board: ")
-            playername = 'Player' + name.upper()
+            try:
+                name = input(f"Please enter player name ({name_1}/{name_2})'s reserve to board: ")
+                playername = 'Player' + name.upper()
 
-            print('Please enter coordinates you want to move to (x, y).')
-            x = int(input('x-coordinate: '))
-            y = int(input('y-coordinate: '))
-            coor = (x, y)
-            print(f'{coor}:{game.show_pieces(coor)}')
+                print('Please enter coordinates you want to move to (x, y).')
+                x = int(input('x-coordinate: '))
+                y = int(input('y-coordinate: '))
+                coor = (x, y)
+                print(f'{coor}:{game.show_pieces(coor)}')
 
-            results = game.reserved_move(playername, coor)
-            print(results)
-            print(f'Results: {coor}:{game.show_pieces(coor)}')
+                results = game.reserved_move(playername, coor)
+                print(results)
+                print(f'Results: {coor}:{game.show_pieces(coor)}')
 
-            if prompt() == 'n':
-                return
+            except ValueError:
+                print('Oops! Incorrect coordinates!')
+
+            finally:
+                if prompt() == 'n':
+                    return
 
         else:
             print('Invalid command!')
