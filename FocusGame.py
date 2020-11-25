@@ -18,7 +18,7 @@ class FocusGame:
         self._odd_turn_player = None
         self._even_turn_player = None
         self._total_set_piece = 18
-        self._stack_height = 1
+        self._stack_height = 5
 
         # initialize players
         self._p1 = Player(player1)
