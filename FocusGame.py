@@ -93,6 +93,8 @@ class FocusGame:
             # check win
             if self._check_win(name) is True:
                 return f'{name} Wins!'
+
+            return 'successfully moved'
         else:
             return legality
 

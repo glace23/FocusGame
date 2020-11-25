@@ -17,8 +17,8 @@ class FocusGame:
         self._turn = 1
         self._odd_turn_player = None
         self._even_turn_player = None
-        self._total_set_piece = 18
-        self._stack_height = 5
+        self._total_set_piece = 1
+        self._stack_height = 1
 
         # initialize players
         self._p1 = Player(player1)
@@ -93,6 +93,8 @@ class FocusGame:
             # check win
             if self._check_win(name) is True:
                 return f'{name} Wins!'
+
+            return 'successfully moved reserve'
         else:
             return legality
 
@@ -316,104 +318,15 @@ class Board:
 
 
 def main():
-    # initialize focus game
-    name_1 = input('What is your name? (Red): ')
-    name_2 = input('What is your name? (Green): ')
-    player_1 = f"Player{name_1.upper()}"
-    player_2 = f"Player{name_2.upper()}"
-    print(f'Hi {player_1} and {player_2}!')
-    game = FocusGame((player_1, 'R'), (player_2, 'G'))
+    game = FocusGame(('A', 'R'), ('B', 'G'))
+    print(game.move_piece('A', (0, 0), (0, 1), 1))
+    print(game.move_piece('B', (1, 0), (1, 1), 1))
+    print(game.show_reserve('A'))
+    print(game.move_piece('A', (0,1),(0,2), 1))
+    print(game.reserved_move('A', (1, 1)))
+    print(game.show_captured('A'))
+    game.show_board()
 
-    while True:
-        # print game board
-        print('Game Board:')
-        game.show_board()
-        mode = input('What would you like to do? \n'
-                     '(move piece/show pieces/show reserve/show captured/reserved move): ')
-        game.show_turn()
-
-        # move piece
-        if mode.lower() == 'move piece':
-            name = input(f'Please enter player name ({name_1}/{name_2}): ')
-            playername = 'Player' + name.upper()
-
-            print('Please enter origin coordinates you are moving from (x, y).')
-            origin_x = int(input('x-coordinate: '))
-            origin_y = int(input('y-coordinate: '))
-            origin = (origin_x, origin_y)
-            print(f'Origin: {origin}:{game.show_pieces(origin)}')
-
-            print('Please enter destination coordinates you are moving to (x,y): ')
-            destination_x = int(input('x-coordinate: '))
-            destination_y = int(input('y-coordinate: '))
-            destination = (destination_x, destination_y)
-            print(f'Destination: {destination}:{game.show_pieces(destination)}')
-            pieces = int(input('Please enter the number of pieces you would like to move: '))
-
-            result = game.move_piece(playername, origin, destination, pieces)
-            print(result)
-            print(f'Results: {destination}:{game.show_pieces(destination)}')
-
-            if prompt() == 'n':
-                return
-
-        # show piece
-        elif mode.lower() == 'show pieces':
-            print('Please enter coordinates you want to check (x, y).')
-            x = int(input('x-coordinate: '))
-            y = int(input('y-coordinate: '))
-            coor = (x, y)
-            print(f'{coor}:{game.show_pieces(coor)}')
-
-            if prompt() == 'n':
-                return
-
-        # show reserve
-        elif mode.lower() == 'show reserve':
-            name = input(f'Please enter player name ({name_1}/{name_2}) number of reserve: ')
-            playername = 'Player' + name.upper()
-            print(f"{playername}'s reserve: {game.show_reserve(playername)}")
-
-            if prompt() == 'n':
-                return
-
-        # show captured
-        elif mode.lower() == 'show captured':
-            name = input(f'Please enter player name ({name_1}/{name_2}) number of captured: ')
-            playername = 'Player' + name.upper()
-            print(f"{playername}'s captured: {game.show_captured(playername)}")
-
-            if prompt() == 'n':
-                return
-
-        elif mode.lower() == 'reserved move':
-            name = input(f"Please enter player name ({name_1}/{name_2})'s reserve to board: ")
-            playername = 'Player' + name.upper()
-
-            print('Please enter coordinates you want to move to (x, y).')
-            x = int(input('x-coordinate: '))
-            y = int(input('y-coordinate: '))
-            coor = (x, y)
-            print(f'{coor}:{game.show_pieces(coor)}')
-
-            results = game.reserved_move(playername, coor)
-            print(results)
-            print(f'Results: {coor}:{game.show_pieces(coor)}')
-
-            if prompt() == 'n':
-                return
-
-        else:
-            print('Invalid command!')
-            if prompt() == 'n':
-                return
-
-
-def prompt():
-    prompt = input('Would you like to continue? (Y/N): ')
-    if prompt.lower() == 'n':
-        print('Thanks for playing! Have a good day!')
-        return 'n'
 
 if __name__ == '__main__':
     main()
