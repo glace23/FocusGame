@@ -415,5 +415,6 @@ def prompt():
         print('Thanks for playing! Have a good day!')
         return 'n'
 
+
 if __name__ == '__main__':
     main()
