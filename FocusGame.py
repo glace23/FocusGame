@@ -18,7 +18,7 @@ class FocusGame:
         self._odd_turn_player = None
         self._even_turn_player = None
         self._total_set_piece = 18
-        self._stack_height = 5
+        self._stack_height = 1
 
         # initialize players
         self._p1 = Player(player1)
@@ -37,12 +37,14 @@ class FocusGame:
             destination -- destination coordinates
             pieces -- number of pieces to move
         """
-        self._turn += 1
         # check if there is any illegal commands
-        legality = self._check_legal(name, origin, destination, pieces)
+        legality = self._check_move_piece_legal(name, origin, destination, pieces)
         piece_list = []
 
         if legality is True:
+            # add turn if pass checks
+            self._turn += 1
+
             # move pieces out of origin STACK into a temp STACK
             self._move_to_list(self._gameboard[origin], piece_list, pieces)
 
@@ -74,11 +76,53 @@ class FocusGame:
 
     def reserved_move(self, name, position):
         """Move reserve piece to board."""
-        if self.show_reserve(name) == 0:
-            return 'no pieces in reserve'
-        item = self._get_player_by_name(name).pop_reserve()
-        self._gameboard[position].append(item)
-        return
+        legality = self._check_move_reserve_legal(name, position)
+        if legality is True:
+            # check if reserve
+            if self.show_reserve(name) == 0:
+                return 'no pieces in reserve'
+
+            # move turn
+            self._turn += 1
+
+            # move reserve to position
+            self._move_to_list(self._get_player_by_name(name).get_reserve(), self._gameboard[position], 1)
+            # check if position list length and take piece if necessary
+            self._check_take_piece(name, position)
+
+            # check win
+            if self._check_win(name) is True:
+                return f'{name} Wins!'
+        else:
+            return legality
+
+    def show_board(self):
+        """Prints game board."""
+        for i in range(0,6):
+            row = ''
+            for j in range(0,6):
+                row = row + f'{(i,j)}:{self._gameboard[(i,j)]} '
+            print(row)
+
+    def show_turn(self, int = 0):
+        """Show whose turn is it"""
+        # check if method is at beginning or end of call
+        if int == 0:
+            first = self._odd_turn_player
+            second = self._even_turn_player
+        elif int == 1:
+            first = self._even_turn_player
+            second = self._odd_turn_player
+        else:
+            return False
+
+        # return player
+        if self._turn % 2 == 1:
+            print(f"It is turn {self._turn + int} and {first}'s turn")
+            return first
+        elif self._turn % 2 == 0:
+            print(f"It is turn {self._turn + int} and {second}'s turn")
+            return second
 
     # --------Helper functions--------#
 
@@ -132,7 +176,13 @@ class FocusGame:
             else:
                 return False
 
-    def _check_legal(self, name, origin, destination, pieces):
+    def _check_position(self, position):
+        """Check if position exists."""
+        if self._gameboard.get(position) is not None:
+            return True
+        return False
+
+    def _check_move_piece_legal(self, name, origin, destination, pieces):
         """Check legality of different conditions."""
         if not self._check_player(name):
             return 'player does not exist'
@@ -142,6 +192,15 @@ class FocusGame:
             return 'invalid location'
         if not self._check_pieces(name, origin, pieces):
             return 'invalid number of pieces'
+        return True
+
+    def _check_move_reserve_legal(self, name, position):
+        if not self._check_player(name):
+            return 'player does not exist'
+        if not self._check_turn(name):
+            return 'not your turn'
+        if not self._check_position(position):
+            return 'invalid location'
         return True
 
     def _move_to_list(self, origin_list, destination_list, max_range):
@@ -257,13 +316,104 @@ class Board:
 
 
 def main():
-    game = FocusGame(('PlayerA', 'R'), ('PlayerB', 'G'))
-    print(game.move_piece('PlayerA', (0, 0), (0,1), 1))  # Returns message "successfully moved"
-    print(game.show_pieces((0, 1)))  # Returns ['R','R']
-    print(game.show_captured('PlayerA'))  # Returns 0
-    print(game.reserved_move('PlayerA', (0, 0)))  # Returns message "No pieces in reserve"
-    print(game.show_reserve('PlayerA'))  # Returns 0
+    # initialize focus game
+    name_1 = input('What is your name? (Red): ')
+    name_2 = input('What is your name? (Green): ')
+    player_1 = f"Player{name_1.upper()}"
+    player_2 = f"Player{name_2.upper()}"
+    print(f'Hi {player_1} and {player_2}!')
+    game = FocusGame((player_1, 'R'), (player_2, 'G'))
 
+    while True:
+        # print game board
+        print('Game Board:')
+        game.show_board()
+        mode = input('What would you like to do? \n'
+                     '(move piece/show pieces/show reserve/show captured/reserved move): ')
+        game.show_turn()
+
+        # move piece
+        if mode.lower() == 'move piece':
+            name = input(f'Please enter player name ({name_1}/{name_2}): ')
+            playername = 'Player' + name.upper()
+
+            print('Please enter origin coordinates you are moving from (x, y).')
+            origin_x = int(input('x-coordinate: '))
+            origin_y = int(input('y-coordinate: '))
+            origin = (origin_x, origin_y)
+            print(f'Origin: {origin}:{game.show_pieces(origin)}')
+
+            print('Please enter destination coordinates you are moving to (x,y): ')
+            destination_x = int(input('x-coordinate: '))
+            destination_y = int(input('y-coordinate: '))
+            destination = (destination_x, destination_y)
+            print(f'Destination: {destination}:{game.show_pieces(destination)}')
+            pieces = int(input('Please enter the number of pieces you would like to move: '))
+
+            result = game.move_piece(playername, origin, destination, pieces)
+            print(result)
+            print(f'Results: {destination}:{game.show_pieces(destination)}')
+
+            if prompt() == 'n':
+                return
+
+        # show piece
+        elif mode.lower() == 'show pieces':
+            print('Please enter coordinates you want to check (x, y).')
+            x = int(input('x-coordinate: '))
+            y = int(input('y-coordinate: '))
+            coor = (x, y)
+            print(f'{coor}:{game.show_pieces(coor)}')
+
+            if prompt() == 'n':
+                return
+
+        # show reserve
+        elif mode.lower() == 'show reserve':
+            name = input(f'Please enter player name ({name_1}/{name_2}) number of reserve: ')
+            playername = 'Player' + name.upper()
+            print(f"{playername}'s reserve: {game.show_reserve(playername)}")
+
+            if prompt() == 'n':
+                return
+
+        # show captured
+        elif mode.lower() == 'show captured':
+            name = input(f'Please enter player name ({name_1}/{name_2}) number of captured: ')
+            playername = 'Player' + name.upper()
+            print(f"{playername}'s captured: {game.show_captured(playername)}")
+
+            if prompt() == 'n':
+                return
+
+        elif mode.lower() == 'reserved move':
+            name = input(f"Please enter player name ({name_1}/{name_2})'s reserve to board: ")
+            playername = 'Player' + name.upper()
+
+            print('Please enter coordinates you want to move to (x, y).')
+            x = int(input('x-coordinate: '))
+            y = int(input('y-coordinate: '))
+            coor = (x, y)
+            print(f'{coor}:{game.show_pieces(coor)}')
+
+            results = game.reserved_move(playername, coor)
+            print(results)
+            print(f'Results: {coor}:{game.show_pieces(coor)}')
+
+            if prompt() == 'n':
+                return
+
+        else:
+            print('Invalid command!')
+            if prompt() == 'n':
+                return
+
+
+def prompt():
+    prompt = input('Would you like to continue? (Y/N): ')
+    if prompt.lower() == 'n':
+        print('Thanks for playing! Have a good day!')
+        return 'n'
 
 if __name__ == '__main__':
     main()
