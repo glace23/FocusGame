@@ -107,6 +107,7 @@ class FocusGame:
             for j in range(0,6):
                 row = row + f'{(i,j)}:{self._gameboard[(i,j)]} '
             print(row)
+        return self._gameboard
 
     def show_turn(self, int = 0):
         """Show whose turn is it"""
@@ -344,7 +345,17 @@ def main():
                     if moves == 'successfully moved reserve':
                         turn += 1
                     if moves == f'{p1} Wins!':
-                        break
+                        outfile.write(' END \n ')
+                        print('END')
+                        game.show_board()
+                        pr1 = game.show_reserve(p1)
+                        pr2 = game.show_reserve(p2)
+                        pc1 = game.show_captured(p1)
+                        pc2 = game.show_captured(p2)
+                        outfile.write(f'Reserves: P1 {pr1}, P2: {pr2} \n'
+                                      f'Captured: P1 {pc1}, P2: {pc2} \n'
+                                      f'Gameboard: {game.show_board()}')
+                        return
                 elif turn % 2 == 0:
                     moves = game.reserved_move(p2, (x, y))
                     outfile.write(f' Player{p2}, {(x, y)} ')
@@ -352,7 +363,17 @@ def main():
                     if moves == 'successfully moved reserve':
                         turn += 1
                     if moves == f'{p2} Wins!':
-                        break
+                        outfile.write(' END \n ')
+                        print('END')
+                        game.show_board()
+                        pr1 = game.show_reserve(p1)
+                        pr2 = game.show_reserve(p2)
+                        pc1 = game.show_captured(p1)
+                        pc2 = game.show_captured(p2)
+                        outfile.write(f'Reserves: P1 {pr1}, P2: {pr2} \n'
+                                      f'Captured: P1 {pc1}, P2: {pc2} \n'
+                                      f'Gameboard: {game.show_board()}')
+                        return
             else:
                 outfile.write(f'Turn {turn} \n')
                 x = random.randint(0, 5)
@@ -373,13 +394,33 @@ def main():
                         if moves == 'successfully moved':
                             turn += 1
                         if moves == f'{p1} Wins!':
-                            break
+                            outfile.write(' END \n ')
+                            print('END')
+                            game.show_board()
+                            pr1 = game.show_reserve(p1)
+                            pr2 = game.show_reserve(p2)
+                            pc1 = game.show_captured(p1)
+                            pc2 = game.show_captured(p2)
+                            outfile.write(f'Reserves: P1 {pr1}, P2: {pr2} \n'
+                                          f'Captured: P1 {pc1}, P2: {pc2} \n'
+                                          f'Gameboard: {game.show_board()}')
+                            return
                     elif turn % 2 == 0:
                         moves = move(p2, (x, y), coor, pieces, game, outfile)
                         if moves == 'successfully moved':
                             turn += 1
                         if moves == f'{p2} Wins!':
-                            break
+                            outfile.write(' END \n ')
+                            print('END')
+                            game.show_board()
+                            pr1 = game.show_reserve(p1)
+                            pr2 = game.show_reserve(p2)
+                            pc1 = game.show_captured(p1)
+                            pc2 = game.show_captured(p2)
+                            outfile.write(f'Reserves: P1 {pr1}, P2: {pr2} \n'
+                                          f'Captured: P1 {pc1}, P2: {pc2} \n'
+                                          f'Gameboard: {game.show_board()}')
+                            return
                 else:
                     outfile.write(' Bad input \n')
     outfile.write(' END \n ')

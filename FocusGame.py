@@ -106,6 +106,10 @@ class FocusGame:
                 row = row + f'{(i,j)}:{self._gameboard[(i,j)]} '
             print(row)
 
+    def get_board(self):
+        """Return game board."""
+        return self._gameboard
+
     def show_turn(self, int = 0):
         """Show whose turn is it"""
         # check if method is at beginning or end of call
