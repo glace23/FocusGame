@@ -45,11 +45,8 @@ class FocusGame:
             # add turn if pass checks
             self._turn += 1
 
-            # move pieces out of origin STACK into a temp STACK
-            self._move_to_list(self._gameboard[origin], piece_list, pieces)
-
-            # move pieces in temp STACK into destination STACK
-            self._move_to_list(piece_list, self._gameboard[destination], pieces)
+            # move pieces out of origin STACK into a destination STACK
+            self._move_to_list(self._gameboard[origin], self._gameboard[destination], pieces)
 
             # check if destination list length and take piece if necessary
             self._check_take_piece(name, destination)
@@ -250,11 +247,13 @@ class FocusGame:
 
         # player wins by opponent not having movable pieces
         for key in self._gameboard:
-            # check if player has all top stack
-            if self._gameboard.get(key)[-1] == self._get_player_by_name(p).get_color():
-                # check if opponent has any reserve
-                if self.show_reserve(op) == 0:
-                    return True
+            # check if coordinate has piece
+            if len(self._gameboard.get(key)) > 0:
+                # check if player has all top stack
+                if self._gameboard.get(key)[-1] == self._get_player_by_name(p).get_color():
+                    # check if opponent has any reserve
+                    if self.show_reserve(op) == 0:
+                        return True
         return False
 
 
