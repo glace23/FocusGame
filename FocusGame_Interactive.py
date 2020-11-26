@@ -384,14 +384,14 @@ def main():
                     outfile.write(' Bad input \n')
     outfile.write(' END \n ')
     print('END')
-    gb = game.show_board()
+    game.show_board()
     pr1 = game.show_reserve(p1)
     pr2 = game.show_reserve(p2)
     pc1 = game.show_captured(p1)
-    pc2 =game.show_captured(p2)
+    pc2 = game.show_captured(p2)
     outfile.write(f'Reserves: P1 {pr1}, P2: {pr2} \n'
                   f'Captured: P1 {pc1}, P2: {pc2} \n'
-                  f'Gameboard: {gb}')
+                  f'Gameboard: {game.show_board()}')
 
 
 def move(name, ori, dest, pieces, game, outfile):
@@ -401,6 +401,7 @@ def move(name, ori, dest, pieces, game, outfile):
     print(f'Player{name}, {ori}, {dest}, {pieces}')
     print(result)
     return result
+
 
 if __name__ == '__main__':
     main()
