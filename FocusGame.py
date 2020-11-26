@@ -250,7 +250,7 @@ class FocusGame:
             # check if coordinate has piece
             if len(self._gameboard.get(key)) > 0:
                 # check if player has all top stack
-                if self._gameboard.get(key)[-1] == self._get_player_by_name(p).get_color():
+                if self._gameboard.get(key)[-1] == p.get_color():
                     # check if opponent has any reserve
                     if self.show_reserve(op) == 0:
                         return True
