@@ -237,22 +237,21 @@ class FocusGame:
 
     def _check_win(self, name):
         """Check if player wins the game."""
-        p = self._get_player_by_name(name)
-        op = None
+        opponent = None
         # determine opponent name
-        if p == self._odd_turn_player:
-            op = self._even_turn_player
-        elif p == self._even_turn_player:
-            op = self._odd_turn_player
+        if name == self._odd_turn_player:
+            opponent = self._even_turn_player
+        elif name == self._even_turn_player:
+            opponent = self._odd_turn_player
 
         # player wins by opponent not having movable pieces
         for key in self._gameboard:
             # check if coordinate has piece
             if len(self._gameboard.get(key)) > 0:
                 # check if player has all top stack
-                if self._gameboard.get(key)[-1] == p.get_color():
+                if self._gameboard.get(key)[-1] == self._get_player_by_name(name).get_color():
                     # check if opponent has any reserve
-                    if self.show_reserve(op) == 0:
+                    if self.show_reserve(opponent) == 0:
                         return True
         return False
 
