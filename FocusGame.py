@@ -45,8 +45,11 @@ class FocusGame:
             # add turn if pass checks
             self._turn += 1
 
-            # move pieces out of origin STACK into a destination STACK
-            self._move_to_list(self._gameboard[origin], self._gameboard[destination], pieces)
+            # move pieces out of origin STACK into a temp STACK
+            self._move_to_list(self._gameboard[origin], piece_list, pieces)
+
+            # move pieces in temp STACK into destination STACK
+            self._move_to_list(piece_list, self._gameboard[destination], pieces)
 
             # check if destination list length and take piece if necessary
             self._check_take_piece(name, destination)
