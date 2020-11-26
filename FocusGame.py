@@ -238,9 +238,20 @@ class FocusGame:
     def _check_win(self, name):
         """Check if player wins the game."""
         p = self._get_player_by_name(name)
-        # if total captured = total set piece, player wins
-        if len(p.get_captured()) == self._total_set_piece:
-            return True
+        op = None
+        # determine opponent name
+        if p == self._odd_turn_player:
+            op = self._even_turn_player
+        elif p == self._even_turn_player:
+            op = self._odd_turn_player
+
+        # player wins by opponent not having movable pieces
+        for key in self._gameboard:
+            # check if player has all top stack
+            if self._gameboard.get(key)[-1] == self._get_player_by_name(p).get_color():
+                # check if opponent has any reserve
+                if self.show_reserve(op) == 0:
+                    return True
         return False
 
 
