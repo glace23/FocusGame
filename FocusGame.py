@@ -25,7 +25,7 @@ class FocusGame:
         self._p2 = Player(player2)
 
         # initialize board
-        self._board = Board()
+        self._board = Board(player1, player2)
         self._gameboard = self._board.get_board()
 
     def move_piece(self, name, origin, destination, pieces):
@@ -45,11 +45,8 @@ class FocusGame:
             # add turn if pass checks
             self._turn += 1
 
-            # move pieces out of origin STACK into a temp STACK
-            self._move_to_list(self._gameboard[origin], piece_list, pieces)
-
-            # move pieces in temp STACK into destination STACK
-            self._move_to_list(piece_list, self._gameboard[destination], pieces)
+            # move pieces out of origin STACK into a destination STACK
+            self._move_to_list(self._gameboard[origin], self._gameboard[destination], pieces)
 
             # check if destination list length and take piece if necessary
             self._check_take_piece(name, destination)
@@ -100,35 +97,21 @@ class FocusGame:
 
     def show_board(self):
         """Prints game board."""
-        for i in range(0,6):
-            row = ''
-            for j in range(0,6):
-                row = row + f'{(i,j)}:{self._gameboard[(i,j)]} '
-            print(row)
+        self._board.show_board()
 
     def get_board(self):
         """Return game board."""
         return self._gameboard
 
-    def show_turn(self, int = 0):
+    def show_turn(self):
         """Show whose turn is it"""
-        # check if method is at beginning or end of call
-        if int == 0:
-            first = self._odd_turn_player
-            second = self._even_turn_player
-        elif int == 1:
-            first = self._even_turn_player
-            second = self._odd_turn_player
-        else:
-            return False
-
         # return player
         if self._turn % 2 == 1:
-            print(f"It is turn {self._turn + int} and {first}'s turn")
-            return first
+            print(f"It is turn {self._turn} and {self._odd_turn_player}'s turn")
+            return self._odd_turn_player
         elif self._turn % 2 == 0:
-            print(f"It is turn {self._turn + int} and {second}'s turn")
-            return second
+            print(f"It is turn {self._turn} and {self._even_turn_player}'s turn")
+            return self._even_turn_player
 
     # --------Helper functions--------#
 
@@ -201,6 +184,7 @@ class FocusGame:
         return True
 
     def _check_move_reserve_legal(self, name, position):
+        """Check legality of different conditions."""
         if not self._check_player(name):
             return 'player does not exist'
         if not self._check_turn(name):
@@ -224,6 +208,7 @@ class FocusGame:
         return destination_list
 
     def _check_take_piece(self, name, origin):
+        """Checks to take piece or not."""
         if len(self._gameboard[origin]) > self._stack_height:
             for k in range(self._stack_height, len(self._gameboard[origin])):
                 # remove first item in list
@@ -244,7 +229,7 @@ class FocusGame:
             p.set_captured(item)
 
     def _get_player_by_name(self, name):
-        """Return player."""
+        """Return player object."""
         if self._p1.get_name() == name:
             return self._p1
         elif self._p2.get_name() == name:
@@ -305,20 +290,40 @@ class Player:
 class Board:
     """Creates a board object."""
 
-    def __init__(self):
+    def __init__(self, player1, player2):
         """Initialize board and board pieces."""
+        # initialize player attributes
+        self._p1 = Player(player1)
+        self._p2 = Player(player2)
+        self._p1_color = self._p1.get_color()
+        self._p2_color = self._p2.get_color()
+
         self._board = {
-            (0, 0): ['R'], (0, 1): ['R'], (0, 2): ['G'], (0, 3): ['G'], (0, 4): ['R'], (0, 5): ['R'],
-            (1, 0): ['G'], (1, 1): ['G'], (1, 2): ['R'], (1, 3): ['R'], (1, 4): ['G'], (1, 5): ['G'],
-            (2, 0): ['R'], (2, 1): ['R'], (2, 2): ['G'], (2, 3): ['G'], (2, 4): ['R'], (2, 5): ['R'],
-            (3, 0): ['G'], (3, 1): ['G'], (3, 2): ['R'], (3, 3): ['R'], (3, 4): ['G'], (3, 5): ['G'],
-            (4, 0): ['R'], (4, 1): ['R'], (4, 2): ['G'], (4, 3): ['G'], (4, 4): ['R'], (4, 5): ['R'],
-            (5, 0): ['G'], (5, 1): ['G'], (5, 2): ['R'], (5, 3): ['R'], (5, 4): ['G'], (5, 5): ['G'],
+            (0, 0): [self._p1_color], (0, 1): [self._p1_color], (0, 2): [self._p2_color],
+            (0, 3): [self._p2_color], (0, 4): [self._p1_color], (0, 5): [self._p1_color],
+            (1, 0): [self._p2_color], (1, 1): [self._p2_color], (1, 2): [self._p1_color],
+            (1, 3): [self._p1_color], (1, 4): [self._p2_color], (1, 5): [self._p2_color],
+            (2, 0): [self._p1_color], (2, 1): [self._p1_color], (2, 2): [self._p2_color],
+            (2, 3): [self._p2_color], (2, 4): [self._p1_color], (2, 5): [self._p1_color],
+            (3, 0): [self._p2_color], (3, 1): [self._p2_color], (3, 2): [self._p1_color],
+            (3, 3): [self._p1_color], (3, 4): [self._p2_color], (3, 5): [self._p2_color],
+            (4, 0): [self._p1_color], (4, 1): [self._p1_color], (4, 2): [self._p2_color],
+            (4, 3): [self._p2_color], (4, 4): [self._p1_color], (4, 5): [self._p1_color],
+            (5, 0): [self._p2_color], (5, 1): [self._p2_color], (5, 2): [self._p1_color],
+            (5, 3): [self._p1_color], (5, 4): [self._p2_color], (5, 5): [self._p2_color],
         }
 
     def get_board(self):
         """Return board."""
         return self._board
+
+    def show_board(self):
+        """Prints game board."""
+        for i in range(0, 6):
+            row = ''
+            for j in range(0, 6):
+                row = row + f'{(i,j)}:{self._board[(i,j)]} '
+            print(row)
 
 
 def main():
