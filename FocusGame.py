@@ -254,6 +254,8 @@ class FocusGame:
         # check if opponent has any reserve after looping through all coordinates
         if self.show_reserve(opponent) == 0:
             return True
+        else:
+            return False
 
 
 class Player:
