@@ -8,6 +8,8 @@
 #               player reserve if player's color or go to player captured if opponents color.
 #               Whoever captures all opponents pieces wins the game.
 
+import random
+
 class FocusGame:
     """Creates a Focus Game object."""
 
@@ -17,8 +19,8 @@ class FocusGame:
         self._turn = 1
         self._odd_turn_player = None
         self._even_turn_player = None
-        self._total_set_piece = 1
-        self._stack_height = 1
+        self._total_set_piece = 18
+        self._stack_height = 5
 
         # initialize players
         self._p1 = Player(player1)
@@ -125,6 +127,11 @@ class FocusGame:
         elif self._turn % 2 == 0:
             print(f"It is turn {self._turn + int} and {second}'s turn")
             return second
+
+    def get_board_coor(self, coor):
+        """Return gameboard coordinate's list"""
+        return self._gameboard[coor]
+
 
     # --------Helper functions--------#
 
@@ -318,15 +325,82 @@ class Board:
 
 
 def main():
-    game = FocusGame(('A', 'R'), ('B', 'G'))
-    print(game.move_piece('A', (0, 0), (0, 1), 1))
-    print(game.move_piece('B', (1, 0), (1, 1), 1))
-    print(game.show_reserve('A'))
-    print(game.move_piece('A', (0,1),(0,2), 1))
-    print(game.reserved_move('A', (1, 1)))
-    print(game.show_captured('A'))
-    game.show_board()
+    p1 = 'A'
+    p2 = 'B'
+    game = FocusGame((p1, 'R'), (p2, 'G'))
+    win = None
+    turn = 1
+    with open('FocusGame.txt', 'w') as outfile:
+        while win is None:
+            i = random.randint(0, 1)
+            if game.show_reserve(p1) + game.show_reserve(p2) > 0 and i == 0:
+                outfile.write(f'Turn {turn} \n')
+                x = random.randint(0, 5)
+                y = random.randint(0, 5)
+                if turn % 2 == 1:
+                    moves = game.reserved_move(p1, (x, y))
+                    outfile.write(f' Player{p1}, {(x, y)} ')
+                    outfile.write(f' {moves} \n')
+                    if moves == 'successfully moved reserve':
+                        turn += 1
+                    if moves == f'{p1} Wins!':
+                        break
+                elif turn % 2 == 0:
+                    moves = game.reserved_move(p2, (x, y))
+                    outfile.write(f' Player{p2}, {(x, y)} ')
+                    outfile.write(f' {moves} \n')
+                    if moves == 'successfully moved reserve':
+                        turn += 1
+                    if moves == f'{p2} Wins!':
+                        break
+            else:
+                outfile.write(f'Turn {turn} \n')
+                x = random.randint(0, 5)
+                y = random.randint(0, 5)
+                a = random.randint(-1, 1)
+                coor = [x, y]
+                rand = random.randint(0, 1)
+                coor[rand] += a
+                coor = tuple(coor)
+                max = len(game.get_board_coor((x, y)))
+                if max > 0:
+                    pieces = random.randint(1, max)
+                else:
+                    pieces = 1
+                if 0 <= (x+a) <= 5 and 0 <= y + a <= 5:
+                    if turn % 2 == 1:
+                        moves = move(p1, (x, y), coor, pieces, game, outfile)
+                        if moves == 'successfully moved':
+                            turn += 1
+                        if moves == f'{p1} Wins!':
+                            break
+                    elif turn % 2 == 0:
+                        moves = move(p2, (x, y), coor, pieces, game, outfile)
+                        if moves == 'successfully moved':
+                            turn += 1
+                        if moves == f'{p2} Wins!':
+                            break
+                else:
+                    outfile.write(' Bad input \n')
+    outfile.write(' END \n ')
+    print('END')
+    gb = game.show_board()
+    pr1 = game.show_reserve(p1)
+    pr2 = game.show_reserve(p2)
+    pc1 = game.show_captured(p1)
+    pc2 =game.show_captured(p2)
+    outfile.write(f'Reserves: P1 {pr1}, P2: {pr2} \n'
+                  f'Captured: P1 {pc1}, P2: {pc2} \n'
+                  f'Gameboard: {gb}')
 
+
+def move(name, ori, dest, pieces, game, outfile):
+    result = game.move_piece(name, ori, dest, pieces)
+    outfile.write(f' Player{name}, {ori}, {dest}, {pieces} ')
+    outfile.write(f' {result} \n')
+    print(f'Player{name}, {ori}, {dest}, {pieces}')
+    print(result)
+    return result
 
 if __name__ == '__main__':
     main()
