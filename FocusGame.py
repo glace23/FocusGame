@@ -17,7 +17,7 @@ class FocusGame:
         self._turn = 1
         self._odd_turn_player = None
         self._even_turn_player = None
-        self._total_set_piece = 18
+        self._set_piece_to_win = 6
         self._stack_height = 5
 
         # initialize players
@@ -108,6 +108,14 @@ class FocusGame:
             print(f"It is turn {self._turn} and {self._even_turn_player}'s turn")
             return self._even_turn_player
 
+    def get_set_piece_to_win(self):
+        """Returns pieces required to capture to win."""
+        return self._set_piece_to_win
+
+    def set_set_piece_to_win(self, num):
+        """Sets pieces required to capture to win."""
+        self._set_piece_to_win = num
+
     # --------Helper functions--------#
 
     def _check_player(self, name):
@@ -121,7 +129,7 @@ class FocusGame:
         # |(X1 - X2)| + |(Y1 - Y2)| <= pieces is legal
         # move distance <= pieces moved
         moved = abs(origin[0] - destination[0]) + abs(origin[1] - destination[1])
-        if moved <= pieces:
+        if moved == pieces:
             return True
         return False
 
@@ -150,9 +158,9 @@ class FocusGame:
 
         colour = self._get_player_by_name(name).get_color()
         count = 0
-        # check if enough player piece in origin stack
+        # check if enough consecutive player piece in origin stack
         for i in range(0, len(stack)):
-            # if last item in list is player color
+            # if last item in list is player color, or the item on top of stack
             if stack[-1 - i] == colour:
                 count += 1
                 # if enough pieces to move in list
@@ -173,6 +181,10 @@ class FocusGame:
             return 'player does not exist'
         if not self._check_turn(name):
             return 'not your turn'
+        # if source or destination locations are invalid
+        if not self._check_position(origin) or not self._check_position(destination):
+            return 'invalid location'
+        # if move length != pieces
         if not self._check_move(origin, destination, pieces):
             return 'invalid location'
         if not self._check_pieces(name, origin, pieces):
@@ -233,25 +245,33 @@ class FocusGame:
 
     def _check_win(self, name):
         """Check if player wins the game."""
-        opponent = None
-        # determine opponent name
-        if name == self._odd_turn_player:
-            opponent = self._even_turn_player
-        elif name == self._even_turn_player:
-            opponent = self._odd_turn_player
-
-        # player wins by opponent not having movable pieces
-        for key in self._gameboard:
-            # check if coordinate has piece
-            if len(self._gameboard.get(key)) > 0:
-                # check if player has all top stack
-                if self._gameboard.get(key)[-1] != self._get_player_by_name(name).get_color():
-                    return False
-        # check if opponent has any reserve after looping through all coordinates
-        if self.show_reserve(opponent) == 0:
+        p = self._get_player_by_name(name)
+        # if total captured = total set piece, player wins
+        if len(p.get_captured()) == self._set_piece_to_win:
             return True
-        else:
-            return False
+        return False
+
+    # def _check_win(self, name):
+    #     """Check if player wins the game."""
+    #     opponent = None
+    #     # determine opponent name
+    #     if name == self._odd_turn_player:
+    #         opponent = self._even_turn_player
+    #     elif name == self._even_turn_player:
+    #         opponent = self._odd_turn_player
+    #
+    #     # player wins by opponent not having movable pieces
+    #     for key in self._gameboard:
+    #         # check if coordinate has piece
+    #         if len(self._gameboard.get(key)) > 0:
+    #             # check if player has all top stack
+    #             if self._gameboard.get(key)[-1] != self._get_player_by_name(name).get_color():
+    #                 return False
+    #     # check if opponent has any reserve after looping through all coordinates
+    #     if self.show_reserve(opponent) == 0:
+    #         return True
+    #     else:
+    #         return False
 
 
 class Player:
@@ -344,12 +364,14 @@ def main():
     game = FocusGame(('PlayerA', 'R'), ('PlayerB', 'G'))
     print(game.move_piece('PlayerA', (0, 0), (0, 1), 1))  # Returns message "successfully moved"
     print(game.show_pieces((0, 1)))  # Returns ['R','R']
-    print(game.move_piece('PlayerB', (0, 3), (0, 4), 1))
-    print(game.move_piece('PlayerA', (0, 1), (0, 2), 1))  # Returns message "successfully moved"
+    print(game.move_piece('PlayerB', (0, 2), (0, 3), 1))
+    print(game.show_pieces((0, 3)))  # Returns ['R','R']
+    print(game.move_piece('PlayerA', (0, 1), (0, 3), 2))  # Returns message "successfully moved"
     print(game.show_pieces((0, 3)))
     print(game.show_captured('PlayerA'))  # Returns 0
-    print(game.reserved_move('PlayerA', (0, 0)))  # Returns message "No pieces in reserve"
+    print(game.reserved_move('PlayerB', (0, 0)))  # Returns message "No pieces in reserve"
     print(game.show_reserve('PlayerA'))  # Returns 0
+    print(game.move_piece('PlayerB',(0,6), (0,5), 1))
 
 
 if __name__ == '__main__':
