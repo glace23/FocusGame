@@ -178,27 +178,35 @@ class FocusGame:
     def _check_move_piece_legal(self, name, origin, destination, pieces):
         """Check legality of different conditions."""
         if not self._check_player(name):
-            return 'player does not exist'
+            # 'player does not exist'
+            return False
         if not self._check_turn(name):
-            return 'not your turn'
+            # 'not your turn'
+            return False
         # if source or destination locations are invalid
         if not self._check_position(origin) or not self._check_position(destination):
-            return 'invalid location'
+            # 'invalid location'
+            return False
         # if move length != pieces
         if not self._check_move(origin, destination, pieces):
-            return 'invalid location'
+            # 'invalid location'
+            return False
         if not self._check_pieces(name, origin, pieces):
-            return 'invalid number of pieces'
+            # 'invalid number of pieces'
+            return False
         return True
 
     def _check_move_reserve_legal(self, name, position):
         """Check legality of different conditions."""
         if not self._check_player(name):
-            return 'player does not exist'
+            # 'player does not exist'
+            return False
         if not self._check_turn(name):
-            return 'not your turn'
+            # 'not your turn'
+            return False
         if not self._check_position(position):
-            return 'invalid location'
+            # 'invalid location'
+            return False
         return True
 
     def _move_to_list(self, origin_list, destination_list, max_range):
@@ -371,7 +379,7 @@ def main():
     print(game.show_captured('PlayerA'))  # Returns 0
     print(game.reserved_move('PlayerB', (0, 0)))  # Returns message "No pieces in reserve"
     print(game.show_reserve('PlayerA'))  # Returns 0
-    print(game.move_piece('PlayerB',(0,6), (0,5), 1))
+    print(game.move_piece('PlayerB', (5, 5), (5, 4), 2))
 
 
 if __name__ == '__main__':

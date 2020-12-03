@@ -228,9 +228,10 @@ def prints(p1, p2, turn, game, outfile):
     pc1 = game.show_captured(p1)
     pc2 = game.show_captured(p2)
     outfile.write(f'Turn {turn} \n')
-    outfile.write(f'Reserves: P1 {pr1}, P2: {pr2} \n'
-                  f'Captured: P1 {pc1}, P2: {pc2} \n'
-                  f'Gameboard: {game.get_board().show_board()} \n')
+    outfile.write(f'Reserves: P1: {pr1}, P2: {pr2} \n'
+                  f'Captured: P1: {pc1}, P2: {pc2} \n'
+                  f'Gameboard: {game.get_board().get_board()} \n')
+    game.get_board().show_board()
 
 
 def move(name, ori, dest, pieces, game, outfile):
