@@ -9,7 +9,10 @@
 #               Whoever captures all opponents pieces wins the game.
 
 class FocusGame:
-    """Creates a Focus Game object."""
+    """
+    Creates a Focus Game object.
+        References Player and Board class
+    """
 
     def __init__(self, player1, player2):
         """Initiate variables that help track the game."""
@@ -83,6 +86,7 @@ class FocusGame:
 
             # move reserve to position
             self._move_to_list(self._get_player_by_name(name).get_reserve(), self._gameboard[position], 1)
+
             # check if position list length and take piece if necessary
             self._check_take_piece(name, position)
 
@@ -180,17 +184,21 @@ class FocusGame:
         if not self._check_player(name):
             # 'player does not exist'
             return False
+
         if not self._check_turn(name):
             # 'not your turn'
             return False
+
         # if source or destination locations are invalid
         if not self._check_position(origin) or not self._check_position(destination):
             # 'invalid location'
             return False
+
         # if move length != pieces
         if not self._check_move(origin, destination, pieces):
             # 'invalid location'
             return False
+
         if not self._check_pieces(name, origin, pieces):
             # 'invalid number of pieces'
             return False
@@ -201,9 +209,11 @@ class FocusGame:
         if not self._check_player(name):
             # 'player does not exist'
             return False
+
         if not self._check_turn(name):
             # 'not your turn'
             return False
+
         if not self._check_position(position):
             # 'invalid location'
             return False
