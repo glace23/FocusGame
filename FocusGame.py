@@ -32,7 +32,8 @@ class FocusGame:
         self._gameboard = self._board.get_board()
 
     def move_piece(self, name, origin, destination, pieces):
-        """ Moves pieces from origin to destination on game board.
+        """
+            Moves pieces from origin to destination on game board.
 
             :Keyword arguments:
             name -- player name
@@ -79,7 +80,8 @@ class FocusGame:
         if legality is True:
             # check if reserve
             if self.show_reserve(name) == 0:
-                return 'no pieces in reserve'
+                # 'no pieces in reserve'
+                return False
 
             # move turn
             self._turn += 1
@@ -235,24 +237,25 @@ class FocusGame:
 
     def _check_take_piece(self, name, origin):
         """Checks to take piece or not."""
+        # if stack is taller than allowed stack height
         if len(self._gameboard[origin]) > self._stack_height:
             for k in range(self._stack_height, len(self._gameboard[origin])):
-                # remove first item in list
-                item = self._gameboard[origin].pop(0)
+                # remove first piece from list
+                a_piece = self._gameboard[origin].pop(0)
                 # move to player reserve or captured
-                self._take_piece(name, item)
+                self._take_piece(name, a_piece)
         return False
 
-    def _take_piece(self, name, item):
+    def _take_piece(self, name, a_piece):
         """Move piece to reserve or captured."""
         # check player's color
         p = self._get_player_by_name(name)
-        if p.get_color() == item:
-            # if same color, move to reserve
-            p.set_reserve(item)
-        elif p.get_color() != item:
-            # if different color, move to captured
-            p.set_captured(item)
+        # if same color as removed piece, move to reserve
+        if p.get_color() == a_piece:
+            p.set_reserve(a_piece)
+        # if different color as removed piece, move to reserve
+        elif p.get_color() != a_piece:
+            p.set_captured(a_piece)
 
     def _get_player_by_name(self, name):
         """Return player object."""
@@ -264,7 +267,7 @@ class FocusGame:
     def _check_win(self, name):
         """Check if player wins the game."""
         p = self._get_player_by_name(name)
-        # if total captured = total set piece, player wins
+        # if total captured = total piece to capture to win, player wins
         if len(p.get_captured()) == self._set_piece_to_win:
             return True
         return False
@@ -294,7 +297,6 @@ class FocusGame:
 
 class Player:
     """Creates player object."""
-
     def __init__(self, player):
         # initialize players
         self._name = player[0]
@@ -337,7 +339,6 @@ class Player:
 
 class Board:
     """Creates a board object."""
-
     def __init__(self, player1, player2):
         """Initialize board and board pieces."""
         # initialize player attributes
@@ -346,6 +347,7 @@ class Board:
         self._p1_color = self._p1.get_color()
         self._p2_color = self._p2.get_color()
 
+        # sets game board by player color
         self._board = {
             (0, 0): [self._p1_color], (0, 1): [self._p1_color], (0, 2): [self._p2_color],
             (0, 3): [self._p2_color], (0, 4): [self._p1_color], (0, 5): [self._p1_color],
@@ -374,7 +376,7 @@ class Board:
             print(row)
 
     def get_coordinates(self, coordinates):
-        """Return the list in gameboard coordinate"""
+        """Returns the list in board coordinate"""
         return self._board[coordinates]
 
 
