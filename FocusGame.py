@@ -222,7 +222,8 @@ class FocusGame:
         return True
 
     def _move_to_list(self, origin_list, destination_list, max_range):
-        """ Move item from one list to another.
+        """
+            Move item from one list to another.
 
             :Keyword arguments:
             origin_list -- list to move from
